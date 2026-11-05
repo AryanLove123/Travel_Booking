@@ -1,0 +1,20 @@
+<div class="row row--between"><h1>Destinations</h1><a class="btn" routerLink="/admin/destinations/new">+ New destination</a></div>
+    @if (catalog.destinations().length === 0) {
+      <div class="empty"><h2>No destinations</h2><p>Create one to get started.</p></div>
+    } @else {
+      <div class="table-wrap">
+        <table class="table">
+          <caption class="sr-only">Destinations</caption>
+          <thead><tr><th scope="col">Name</th><th scope="col">Country</th><th scope="col">Hotels</th><th scope="col">Visible on home</th><th scope="col">Actions</th></tr></thead>
+          <tbody>
+            @for (d of catalog.destinations(); track d.id) {
+              <tr>
+                <td><strong>{{ d.name }}</strong></td><td>{{ d.country }}</td><td>{{ catalog.hotelsOf(d.id).length }}</td>
+                <td><label class="check"><input type="checkbox" [checked]="d.published" (change)="toggle(d)" [attr.aria-label]="'Published: ' + d.name" /> {{ d.published ? 'Published' : 'Hidden' }}</label></td>
+                <td class="actions"><a class="btn btn--secondary btn--sm" [routerLink]="['/admin/destinations', d.id]">Edit</a><button type="button" class="btn btn--danger btn--sm" (click)="remove(d)">Delete</button></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }

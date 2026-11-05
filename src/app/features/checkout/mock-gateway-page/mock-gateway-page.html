@@ -1,0 +1,65 @@
+<div class="container page narrow">
+  <p class="alert alert--warn">
+    <strong>Simulated payment gateway.</strong> Nothing here is real. No card details are collected
+    and no money moves.
+  </p>
+
+  @if (booking(); as b) {
+    @if (
+      b.status !== 'pending_payment' &&
+      b.status !== 'payment_failed' &&
+      b.status !== 'payment_cancelled'
+    ) {
+      <div class="card stack">
+        <h1>Payment already handled</h1>
+        <p>
+          This booking is <strong>{{ b.status === 'confirmed' ? 'confirmed' : 'closed' }}</strong
+          >.
+        </p>
+        <a class="btn" [routerLink]="['/booking', b.id, 'result']">View result</a>
+      </div>
+    } @else if (stale(); as message) {
+      <div class="card stack">
+        <h1>This stay can no longer be paid for</h1>
+        <p>{{ message }}</p>
+        <a class="btn" routerLink="/">Search again</a>
+      </div>
+    } @else if (!b.payment) {
+      <div class="card stack">
+        <h1>No payment in progress</h1>
+        <p>Return to checkout to start a payment.</p>
+        <a class="btn" [routerLink]="['/rooms', b.roomId]">Back to room</a>
+      </div>
+    } @else {
+      <form class="card stack" [formGroup]="form" (ngSubmit)="pay()">
+        <h1>Pay {{ b.price.total | currency: b.price.currency }}</h1>
+        <p class="muted">
+          {{ b.snapshot.roomName }} · {{ b.snapshot.hotelName }}<br />Payment reference
+          <code>{{ b.payment.paymentId }}</code>
+        </p>
+
+        <fieldset class="outcomes" [disabled]="busy()">
+          <legend>Choose the result to simulate</legend>
+          @for (o of outcomes; track o.value) {
+            <label class="outcome">
+              <input type="radio" formControlName="outcome" [value]="o.value" />
+              <span
+                ><strong>{{ o.label }}</strong
+                ><br /><span class="muted small">{{ o.hint }}</span></span
+              >
+            </label>
+          }
+        </fieldset>
+
+        <button type="submit" class="btn" [disabled]="busy()">
+          {{ busy() ? 'Processing…' : 'Continue' }}
+        </button>
+      </form>
+    }
+  } @else {
+    <div class="empty">
+      <h1>Booking not found</h1>
+      <a routerLink="/bookings" class="btn">My bookings</a>
+    </div>
+  }
+</div>

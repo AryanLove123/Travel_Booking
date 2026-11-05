@@ -1,0 +1,55 @@
+<form class="search" [formGroup]="form" novalidate (ngSubmit)="submit()" [class.search--compact]="compact()">
+    <div class="field">
+        <label for="sf-destination">Destination</label>
+        <select id="sf-destination" formControlName="destinationId">
+            <option value="">Where are you going?</option>
+            @for(d of catalog.visibleDestinations(); track d.id){
+            <option [value]="d.id">{{d.name}}, {{d.country}}</option>
+            }
+        </select>
+        @if(showError('destinationId')){
+        <span class="error">Please select a destination</span>
+        }
+    </div>
+
+    <div class="field">
+        <label for="sf-check-in">Check-in</label>
+        <input id="sf-check-in" type="date" formControlName="checkIn" [min]="today"
+            (change)="updateMinCheckOut(form.controls.checkIn.value)">
+        @if(showError('checkIn')){
+        <span class="error">
+            {{form.controls.checkIn.errors?.['required'] ? 'Please select a check-in date' : ''}}
+            {{form.controls.checkIn.errors?.['past'] ? 'Check-in date cannot be in the past' : ''}}
+        </span>
+        }
+    </div>
+
+    <div class="field">
+        <label for="sf-check-out">Check-out</label>
+        <input id="sf-check-out" type="date" formControlName="checkOut" [min]="minCheckOut()">
+        @if(showError('checkOut') || showGroupError()){
+        <span class="error">
+            {{form.controls.checkOut.errors?.['required'] ? 'Please select a check-out date' : ''}}
+            {{ showGroupError()? 'Check-out date cannot be before check-in date' : 'Enter a valid check-out date' }}
+        </span>
+        }
+    </div>
+
+    <div class="field field--narrow">
+        <label for="sf-rooms">Rooms</label>
+        <input id="sf-rooms" type="number" formControlName="rooms" min="1">
+        @if(showError('rooms')){
+        <span class="error">Please enter a valid number of rooms</span>
+        }
+    </div>
+
+    <div class="field field--narrow">
+        <label for="sf-guests">Guests</label>
+        <input id="sf-guests" type="number" formControlName="guests" min="1">
+        @if(showError('guests')){
+        <span class="error">Please enter a valid number of guests</span>
+        }
+    </div>
+
+    <button class="btn search__submit" type="submit">Search</button>
+</form>

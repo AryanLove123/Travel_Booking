@@ -1,0 +1,31 @@
+<section class="hero">
+      <div class="container">
+        <h1 class="hero__title">Awaken to a different world</h1>
+        <p class="hero__lead">Search hand-picked stays in {{ destinations().length }} destinations and book in minutes.</p>
+        <app-search-form (search)="onSearch($event)" />
+      </div>
+    </section>
+
+    <section class="container page">
+      <h2 id="destinations-heading" class="section-title">A signature of excellence</h2>
+      <p class="muted">Pick a destination to see the stays we offer there.</p>
+
+      @if (destinations().length === 0) {
+        <div class="empty"><h3>No destinations available yet</h3><p>Please check back soon.</p></div>
+      } @else {
+        <ul class="grid grid--cards list-reset">
+          @for (d of destinations(); track d.id) {
+            <li>
+              <a class="dest" [routerLink]="['/search']" [queryParams]="paramsFor(d.id)">
+                <img appImgFallback [src]="d.imageUrl" [alt]="''" width="400" height="450" loading="lazy" decoding="async" />
+                <span class="dest__body">
+                  <strong class="dest__name">{{ d.name }}</strong>
+                  <span class="dest__country">{{ d.country }} · {{ hotelCount(d.id) }} propert{{ hotelCount(d.id) === 1 ? 'y' : 'ies' }}</span>
+                  <span class="dest__tag">{{ d.tagline }}</span>
+                </span>
+              </a>
+            </li>
+          }
+        </ul>
+      }
+    </section>

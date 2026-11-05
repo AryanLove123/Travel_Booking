@@ -1,0 +1,25 @@
+<div class="container page narrow">
+    <div class="card stack">
+        <h1>Sign in</h1>
+        <p class="muted">Sign in to book rooms, save searches and see your reservations.</p>
+
+        @if (auth.error(); as e) { <p class="alert alert--error" role="alert">{{ e }}</p> }
+
+        <button type="button" class="btn btn--block" (click)="google()" [disabled]="auth.busy()">
+            {{ auth.busy() ? 'Opening Google…' : 'Continue with Google' }}
+        </button>
+        @if (!auth.firebaseConfigured) {
+        <p class="alert alert--warn small">Firebase is not configured in this build, so Google sign-in is unavailable.
+            Use a demo account below, or add your Firebase keys (see README).</p>
+        }
+
+        <hr />
+        <h2>Evaluation accounts</h2>
+        <p class="muted small">Demo-only accounts that work without Firebase. They are stored in this browser only and
+            are not real authentication.</p>
+        <div class="row">
+            <button type="button" class="btn btn--secondary" (click)="demo('customer')">Customer demo</button>
+            <button type="button" class="btn btn--secondary" (click)="demo('admin')">Admin demo</button>
+        </div>
+    </div>
+</div>

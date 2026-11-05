@@ -1,0 +1,77 @@
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: var(--sp-6);
+    align-items: start;
+}
+
+.booking {
+    position: sticky;
+    top: calc(var(--header-h) + var(--sp-4));
+}
+
+.gallery__main {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+}
+
+.gallery__thumbs {
+    display: flex;
+    gap: var(--sp-2);
+    list-style: none;
+    padding: 0;
+    margin: var(--sp-2) 0 0;
+    overflow-x: auto;
+}
+
+.gallery__thumbs button {
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    background: none;
+    cursor: pointer;
+}
+
+.gallery__thumbs button {
+    border-color: var(--c-brand-600);
+}
+
+.gallery__thumbs img {
+    width: 96px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.facts,
+.amenities {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+}
+
+.facts li,
+.amenities li {
+    padding: 0.35rem 0.8rem;
+    background: var(--c-surface-alt);
+    border-radius: 999px;
+    font-size: var(--fs-sm);
+}
+
+.small {
+    font-size: var(--fs-sm);
+}
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .booking {
+        position: static;
+    }
+}

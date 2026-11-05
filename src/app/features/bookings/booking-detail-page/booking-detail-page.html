@@ -1,0 +1,80 @@
+<div class="container page narrow">
+    <a routerLink="/bookings" class="breadcrumb">← My bookings</a>
+    @if (booking(); as b) {
+    <div class="card stack">
+        <p class="row">
+            <span [class]="b.status | bookingStatusClass">{{ b.status | bookingStatus }}</span>
+            @if (b.status === 'confirmed' && phase() === 'completed') {
+            <span class="badge">Completed stay</span>
+            }
+            @if (b.status === 'confirmed' && phase() === 'in-progress') {
+            <span class="badge badge--brand">Stay in progress</span>
+            }
+        </p>
+        <h1>{{ b.snapshot.roomName }}</h1>
+        <p class="muted">{{ b.snapshot.hotelName }} · {{ b.snapshot.address }}</p>
+        <p class="code">
+            <span class="muted">Confirmation number</span><strong>{{ b.confirmationCode }}</strong>
+        </p>
+        <dl class="details">
+            <dt>Dates</dt>
+            <dd>{{ b.checkIn | stayRange: b.checkOut }}</dd>
+            <dt>Guests</dt>
+            <dd>{{ b.guests }} · {{ b.rooms }} rooms</dd>
+            <dt>Guest</dt>
+            <dd>{{ b.guest.fullName }} · {{ b.guest.email }}</dd>
+            <dt>Subtotal</dt>
+            <dd>{{ b.price.subtotal | currency: b.price.currency }}</dd>
+            @if (b.price.discount > 0) {
+            <dt>Discount</dt>
+            <dd>−{{ b.price.discount | currency: b.price.currency }}</dd>
+            }
+            <dt>Service fee</dt>
+            <dd>{{ b.price.serviceFee | currency: b.price.currency }}</dd>
+            <dt>Total</dt>
+            <dd>
+                <strong>{{ b.price.total | currency: b.price.currency }}</strong>
+            </dd>
+            <dt>Booked</dt>
+            <dd>{{ b.createdAt | date: 'medium' }}</dd>
+        </dl>
+
+        @if (error(); as e) {
+        <p class="alert alert--warn" role="alert">{{ e }}</p>
+        }
+
+        @if (eligibility(); as el) {
+        @if (el.allowed) {
+        @if (confirming()) {
+        <div class="alert alert--warn" role="alertdialog" aria-label="Confirm cancellation">
+            <p>
+                Cancel this booking? The room is released for other guests.
+                <strong>No refund is processed</strong> in this demo, because no real payment was
+                taken.
+            </p>
+            <div class="row">
+                <button class="btn btn--danger btn--sm" type="button" (click)="cancel(b.id)">
+                    Yes, cancel booking</button><button class="btn btn--secondary btn--sm" type="button"
+                    (click)="confirming.set(false)">
+                    Keep booking
+                </button>
+            </div>
+        </div>
+        } @else {
+        <button type="button" class="btn btn--secondary" (click)="confirming.set(true)">
+            Cancel booking
+        </button>
+        }
+        } @else if (b.status === 'confirmed' || b.status === 'cancelled') {
+        <p class="alert" role="note">{{ el.message }}</p>
+        }
+        }
+    </div>
+    } @else {
+    <div class="empty">
+        <h1>Booking not found</h1>
+        <p>It may belong to another account, or it no longer exists.</p>
+        <a routerLink="/bookings" class="btn">My bookings</a>
+    </div>
+    }
+</div>

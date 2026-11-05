@@ -1,0 +1,10 @@
+<h1>Dashboard</h1>
+<div class="grid stats">
+    @for (s of stats(); track s.label) {
+    <a class="card stat" [routerLink]="s.link"><span class="muted">{{ s.label }}</span><strong>{{ s.value
+            }}</strong><span class="muted small">{{ s.sub }}</span></a>
+    }
+    <div class="card stat"><span class="muted">Confirmed revenue (simulated)</span><strong>{{ revenue() | currency:
+            'USD' : 'symbol' : '1.0-0' }}</strong><span class="muted small">{{ confirmed() }} confirmed booking{{
+            confirmed() === 1 ? '' : 's' }}</span></div>
+</div>

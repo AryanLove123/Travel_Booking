@@ -8,7 +8,7 @@
   },
   "include": [
     "src/**/*.ts"
-  ],
+, "src/app/features/admin/admin-destinations/destination-admin-page", "src/app/features/admin/admin-destinations", "src/app/features/admin/dashboard-page"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

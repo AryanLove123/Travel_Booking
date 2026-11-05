@@ -1,0 +1,61 @@
+<div class="container page">
+  <h1>My bookings</h1>
+  @if (rows().length === 0) {
+    <div class="empty">
+      <h2>No bookings yet</h2>
+      <p>When you book a stay it will show up here.</p>
+      <a routerLink="/" class="btn">Find a stay</a>
+    </div>
+  } @else {
+    <ul class="list stack">
+      @for (r of rows(); track r.booking.id) {
+        <li class="card row row--between">
+          <div>
+            <p class="row">
+              @if (r.expired) {
+                <span class="badge badge--danger">Expired</span>
+              } @else {
+                <span [class]="r.booking.status | bookingStatusClass">{{
+                  r.booking.status | bookingStatus
+                }}</span>
+              }
+              @if (r.completed) {
+                <span class="badge">Completed stay</span>
+              }
+              @if (r.inProgress) {
+                <span class="badge badge--brand">Stay in progress</span>
+              }
+              <span class="muted code">{{ r.booking.confirmationCode }}</span>
+            </p>
+            <h2>{{ r.booking.snapshot.roomName }} · {{ r.booking.snapshot.hotelName }}</h2>
+            <p class="muted">
+              {{ r.booking.snapshot.destinationName }} ·
+              {{ r.booking.checkIn | stayRange: r.booking.checkOut }}
+            </p>
+            @if (r.expired) {
+              <p class="muted small">
+                The check-in date passed before this was paid, so it can’t be completed. Search
+                again for new dates.
+              </p>
+            }
+          </div>
+          <div class="right">
+            <strong>{{ r.booking.price.total | currency: r.booking.price.currency }}</strong
+            ><br />
+            @if (r.expired) {
+              <a class="btn btn--secondary btn--sm" routerLink="/">Search again</a>
+            } @else if (r.unpaid) {
+              <a class="btn btn--sm" [routerLink]="['/booking', r.booking.id, 'result']"
+                >Continue payment</a
+              >
+            } @else {
+              <a class="btn btn--secondary btn--sm" [routerLink]="['/bookings', r.booking.id]"
+                >Details</a
+              >
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</div>

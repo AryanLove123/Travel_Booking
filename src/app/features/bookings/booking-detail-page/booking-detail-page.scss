@@ -1,0 +1,31 @@
+.narrow {
+    max-width: 720px;
+}
+
+.code {
+    display: grid;
+    padding: var(--sp-4);
+    background: var(--c-brand-50);
+    border-radius: var(--radius-md);
+    margin: 0;
+}
+
+.code strong {
+    font-size: var(--fs-xl);
+    letter-spacing: 0.12em;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: var(--sp-2) var(--sp-4);
+    margin: 0;
+}
+
+.details dt {
+    color: var(--c-ink-500);
+}
+
+.details dd {
+    margin: 0;
+}

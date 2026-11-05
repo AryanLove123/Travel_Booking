@@ -1,0 +1,128 @@
+<div class="container page">
+  @if (detail(); as d) {
+    <nav class="breadcrumb">
+      <a routerLink="/search" [queryParams]="searchParams()">← Back to results</a>
+    </nav>
+
+    <header class="head">
+      <p class="muted">{{ d.destination.name }}, {{ d.destination.country }}</p>
+      <h1>{{ d.room.name }}</h1>
+      <p class="row">
+        <app-star-rating
+          [rating]="d.hotel.rating"
+          [reviews]="d.hotel.reviewCount"
+        ></app-star-rating>
+        <span class="muted">· {{ d.hotel.address }}</span>
+      </p>
+    </header>
+
+    <div class="layout">
+      <div class="main-stack">
+        <div class="gallery">
+          <img class="gallery__main" appImgFallback [src]="images()[activeImage()]" width="900" height="600" />
+          <ul class="gallery__thumbs">
+            @for (src of images(); track src; let i = $index) {
+              <li>
+                <button type="button" (click)="activeImage.set(i)">
+                  <img appImgFallback [src]="src" width="120" height="80" loading="lazy" />
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+
+        <section>
+          <h2>About this room</h2>
+          <p>{{ d.room.description }}</p>
+          <p class="muted">{{ d.hotel.description }}</p>
+          <ul class="facts">
+            <li>👥 Sleeps {{ d.room.maxGuests }}</li>
+            <li>🛏 {{ d.room.beds }} bed{{ d.room.beds > 1 ? 's' : '' }}</li>
+            <li>🚿 {{ d.room.bathrooms }} bathroom{{ d.room.bathrooms > 1 ? 's' : '' }}</li>
+            @if (d.room.freeCancellation) {
+              <li>✓ Free cancellation</li>
+            }
+          </ul>
+        </section>
+
+        <section>
+          <h2>Amenities</h2>
+          <ul class="amenities">
+            @for (a of d.room.amenities; track a) {
+              <li>{{ a }}</li>
+            }
+          </ul>
+        </section>
+      </div>
+      <aside class="card booking" aria-labelledby="book-h">
+        <h2 id="book-h">
+          {{ d.room.pricePerNight | currency: 'USD' : 'symbol' : '1.0-0' }}
+          <span class="muted small">/ night</span>
+        </h2>
+
+        @if (errors().length > 0) {
+          <div class="alert alert--warn" role="alert">
+            <p>Choose valid dates to see availability:</p>
+            <ul>
+              @for (e of errors(); track e) {
+                <li>{{ messages[e] }}</li>
+              }
+            </ul>
+            <a
+              class="btn btn--sm"
+              routerLink="/search"
+              [queryParams]="{ destination: d.destination.id }"
+              >Pick dates</a
+            >
+          </div>
+        } @else {
+          <p>
+            <strong>{{ criteria().checkIn | date: 'mediumDate' }}</strong> →
+            <strong>{{ criteria().checkOut | date: 'mediumDate' }}</strong
+            ><br />
+            <span class="muted"
+              >{{ criteria().checkIn | stayRange: criteria().checkOut }} ·
+              {{ criteria().guests }} guest{{ criteria().guests > 1 ? 's' : '' }} ·
+              {{ criteria().rooms }} room{{ criteria().rooms > 1 ? 's' : '' }}</span
+            >
+          </p>
+
+          @if (!fits()) {
+            <p class="alert alert--error" role="alert">
+              This room sleeps {{ d.room.maxGuests }} per unit. Reduce guests or add rooms.
+            </p>
+          } @else if (units() < criteria().rooms) {
+            <p class="alert alert--error" role="alert">
+              Not available for these dates. Try different dates.
+            </p>
+          } @else {
+            <p class="badge badge--success">Available · {{ units() }} left</p>
+            <div class="price-lines">
+              <div>
+                <span
+                  >{{ d.room.pricePerNight | currency: 'USD' }} × {{ price().nights }} nights ×
+                  {{ price().rooms }} room{{ price().rooms > 1 ? 's' : '' }}</span
+                ><span>{{ price().subtotal | currency: 'USD' }}</span>
+              </div>
+              <div class="total">
+                <span>Estimated total</span><span>{{ price().total | currency: 'USD' }}</span>
+              </div>
+            </div>
+            <p class="muted small">
+              Includes the {{ feePercent }}% service fee. A first-booking discount is applied at
+              checkout if eligible.
+            </p>
+            <button type="button" class="btn btn--block" (click)="reserve()">Reserve</button>
+          }
+        }
+      </aside>
+    </div>
+  }
+  @else{
+    <div class="empty">
+        <h1>Rooms not found</h1>
+        <p>This room may have been removed or is not currently operating</p>
+        <a [routerLink]="['/']" class="btn">Browse Destinations</a>
+    </div>
+  }
+</div>

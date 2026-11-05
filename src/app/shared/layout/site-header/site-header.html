@@ -1,0 +1,44 @@
+<header class="header">
+  <div class="container header__inner">
+    <a routerLink="/" class="brand"> <span class="brand_mark"></span> ✈️ Tripsy </a>
+
+    <button type="button" class="menu-toggle" (click)="navOpen.set(!navOpen())">☰</button>
+
+    <nav id="main-nav" class="nav" [class.nav--open]="navOpen()" (click)="navOpen.set(false)">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        >Stays</a
+      >
+      <a routerLink="/saved-searches" routerLinkActive="active">Saved searches</a>
+      <a routerLink="/bookings" routerLinkActive="active">My bookings</a>
+      @if (auth.isAdmin()) {
+        <a routerLink="/admin" routerLinkActive="active">Admin</a>
+      }
+    </nav>
+
+    <div class="account">
+      @if (auth.user(); as user) {
+        <button type="button" class="avatar" (click)="menuOpen.set(!menuOpen())">
+          @if (user.photoUrl) {
+            <img [src]="user.photoUrl" />
+          } @else {
+            <span>{{ user.displayName.charAt(0).toUpperCase() }}</span>
+          }
+        </button>
+        @if (menuOpen()) {
+          <div class="menu">
+            <p class="menu__name">
+              {{ user.displayName }} <br />
+              <span class="muted">{{ user.email }}</span>
+            </p>
+            <p class="menu__role">
+              <span class="badge badge--brand">{{ auth.role() }}</span>
+              <button type="button" class="menu__item" (click)="signOut()">Sign out</button>
+            </p>
+          </div>
+        }
+      } @else {
+        <a routerLink="/login" class="btn btn--sm">Sign in</a>
+      }
+    </div>
+  </div>
+</header>

@@ -1,0 +1,24 @@
+.list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+h2 {
+    font-size: var(--fs-md);
+    margin: var(--sp-2) 0 var(--sp-1);
+}
+
+.right {
+    text-align: right;
+}
+
+.code {
+    letter-spacing: 0.1em;
+    font-size: var(--fs-sm);
+}
+
+.small {
+    font-size: var(--fs-sm);
+    margin: 0;
+}

@@ -1,0 +1,130 @@
+<div class="container page narrow" aria-live="polite">
+  @if (loading()) {
+    <div class="card">
+      <div class="skeleton" style="height: 120px"></div>
+      <p class="muted">Verifying your payment…</p>
+    </div>
+  } @else {
+    @switch (outcome()?.kind) {
+      @case ('confirmed') {
+        @if (confirmed(); as o) {
+          <div class="card stack ok" role="status">
+            <p class="badge badge--success">Payment verified (simulated)</p>
+            <h1>Booking confirmed 🎉</h1>
+            <p class="code">
+              <span class="muted">Confirmation number</span
+              ><strong>{{ o.booking.confirmationCode }}</strong>
+            </p>
+            <dl class="details">
+              <dt>Stay</dt>
+              <dd>
+                {{ o.booking.snapshot.roomName }}, {{ o.booking.snapshot.hotelName }}<br />{{
+                  o.booking.snapshot.address
+                }}
+              </dd>
+              <dt>Dates</dt>
+              <dd>{{ o.booking.checkIn | stayRange: o.booking.checkOut }}</dd>
+              <dt>Guests</dt>
+              <dd>
+                {{ o.booking.guests }} · {{ o.booking.rooms }} room{{
+                  o.booking.rooms > 1 ? 's' : ''
+                }}
+              </dd>
+              <dt>Guest</dt>
+              <dd>{{ o.booking.guest.fullName }} ({{ o.booking.guest.email }})</dd>
+              <dt>Total paid</dt>
+              <dd>{{ o.booking.price.total | currency: o.booking.price.currency }}</dd>
+              <dt>Payment ref</dt>
+              <dd>
+                <code>{{ o.booking.payment?.paymentId }}</code>
+              </dd>
+              <dt>Booked on</dt>
+              <dd>{{ o.booking.updatedAt | date: 'medium' }}</dd>
+            </dl>
+            <div class="row">
+              <a class="btn" routerLink="/bookings">View my bookings</a
+              ><a class="btn btn--secondary" routerLink="/">Keep exploring</a>
+            </div>
+          </div>
+        }
+      }
+      @case ('processing') {
+        <div class="card stack">
+          <h1>Payment is processing</h1>
+          <p>
+            We have not received a final result yet. Your booking is
+            <strong>not confirmed</strong> until we do.
+          </p>
+          <button type="button" class="btn" (click)="load()">Check again</button>
+        </div>
+      }
+      @case ('failed') {
+        <div class="card stack" role="alert">
+          <h1>Payment failed</h1>
+          <p>
+            {{ reason() }} Your booking is <strong>not confirmed</strong> and you have not been
+            charged.
+          </p>
+          <div class="row">
+            <button type="button" class="btn" (click)="retry()" [disabled]="retrying()">
+              Try payment again</button
+            ><a class="btn btn--secondary" routerLink="/bookings">My bookings</a>
+          </div>
+          @if (retryError(); as e) {
+            <p class="alert alert--error">{{ e }}</p>
+          }
+        </div>
+      }
+      @case ('cancelled') {
+        <div class="card stack">
+          <h1>Payment cancelled</h1>
+          <p>
+            You left the payment page. Your booking is <strong>not confirmed</strong> and nothing
+            was charged.
+          </p>
+          <div class="row">
+            <button type="button" class="btn" (click)="retry()" [disabled]="retrying()">
+              Resume payment</button
+            ><a class="btn btn--secondary" routerLink="/">Home</a>
+          </div>
+          @if (retryError(); as e) {
+            <p class="alert alert--error">{{ e }}</p>
+          }
+        </div>
+      }
+      @case ('verification-failed') {
+        <div class="card stack" role="alert">
+          <h1>We could not verify the payment</h1>
+          <p>{{ reason() }}</p>
+          <button type="button" class="btn" (click)="load()">Try again</button>
+        </div>
+      }
+      @case ('expired') {
+        <div class="card stack" role="alert">
+          <h1>This stay can no longer be booked</h1>
+          <p>{{ expiredMessage() }}</p>
+          <p class="muted">
+            Nothing was charged. In a real system any payment taken would be refunded automatically.
+          </p>
+          <a class="btn" routerLink="/">Search again</a>
+        </div>
+      }
+      @case ('inventory-conflict') {
+        <div class="card stack" role="alert">
+          <h1>Room no longer available</h1>
+          <p>
+            Someone else booked the last unit while your payment was in progress, so this booking
+            was cancelled. In a real system you would be refunded automatically.
+          </p>
+          <a class="btn" routerLink="/">Search again</a>
+        </div>
+      }
+      @default {
+        <div class="empty">
+          <h1>Booking not found</h1>
+          <a class="btn" routerLink="/bookings">My bookings</a>
+        </div>
+      }
+    }
+  }
+</div>

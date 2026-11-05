@@ -1,0 +1,164 @@
+<section class="bar">
+  <div class="container">
+    <app-search-form [initial]="criteria()" (search)="onSearch($event)"></app-search-form>
+  </div>
+</section>
+
+<div class="container page layout">
+  <aside class="filters">
+    <details open>
+      <summary>
+        <h2>Filters</h2>
+      </summary>
+
+      <div class="field">
+        <label for="propertyType">Property Type</label>
+        @for (t of propertyTypes; track t) {
+          <label class="check">
+            <input
+              type="checkbox"
+              [checked]="filters().propertyTypes.includes(t)"
+              (change)="toggleType(t)"
+            />
+            {{ t }}
+          </label>
+        }
+      </div>
+      <div class="field">
+        <label for="max-price"
+          >Max price / night: <strong>{{ maxPriceLabel() }}</strong></label
+        >
+        <input
+          id="max-price"
+          type="range"
+          [min]="priceBounds().min"
+          [max]="priceBounds().max"
+          step="10"
+          [value]="filters().maxPricePerNight ?? priceBounds().max"
+          (input)="setMaxPrice($any($event.target).valueAsNumber)"
+        />
+      </div>
+
+      <div class="field">
+        <label for="min-rating">Minimum rating</label>
+        <select id="min-rating" (change)="setMinRating($any($event.target).value)">
+          @for (r of ratingOptions; track r) {
+            <option [value]="r" [selected]="filters().minRating === r">
+              {{ r === 0 ? 'Any' : r + '+' }}
+            </option>
+          }
+        </select>
+      </div>
+
+      @if (amenityOptions().length > 0) {
+        <div class="field">
+          <label for="amenities">Amenities</label>
+          @for (a of amenityOptions(); track a) {
+            <label class="check">
+              <input
+                type="checkbox"
+                [checked]="filters().amenities.includes(a)"
+                (change)="toggleAmenity(a)"
+              />
+              {{ a }}
+            </label>
+          }
+        </div>
+      }
+
+      <button type="button" class="btn btn--secondary btn--sm" (click)="resetFilters()">
+        Reset filters
+      </button>
+    </details>
+  </aside>
+
+  <section class="results">
+    @if (errors().length > 0) {
+      <div class="alert alert--warn">
+        <h2>Check your search</h2>
+        <ul>
+          @for (e of errors(); track e) {
+            <li>{{ messages[e] }}</li>
+          }
+        </ul>
+      </div>
+    } @else {
+      <div class="row row--between head">
+        <h1 class="title">{{ headline() }}</h1>
+        <div class="row">
+          <div class="field field--inline">
+            <label for="sort">Sort by</label>
+            <select id="sort" (change)="setSort($any($event.target).value)">
+              <option value="relevance" [selected]="filters().sort === 'relevance'">
+                Best match
+              </option>
+              <option value="price-asc" [selected]="filters().sort === 'price-asc'">
+                Price: low to high
+              </option>
+              <option value="price-desc" [selected]="filters().sort === 'price-desc'">
+                Price: high to low
+              </option>
+              <option value="rating" [selected]="filters().sort === 'rating'">Guest rating</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn--secondary btn--sm" (click)="saveSearch()">
+            ☆ Save this search
+          </button>
+        </div>
+      </div>
+      @switch (state().status) {
+        @case ('loading') {
+          <div class="stack">
+            <div class="skeleton" style="height: 180px"></div>
+            <div class="skeleton" style="height: 180px"></div>
+          </div>
+        }
+        @case ('error') {
+          <div class="alert alert--error" role="alert">Something went wrong while searching.</div>
+        }
+        @case ('done') {
+          @if (results().length === 0) {
+            <div class="empty">
+              <h2>No rooms match</h2>
+              <p>
+                {{ anyFilterActive() ? 'Try removing some filters, ' : 'Try ' }}different dates,
+                fewer guests or another destination.
+              </p>
+              @if (anyFilterActive()) {
+                <button type="button" class="btn" (click)="resetFilters()">Clear filters</button>
+              }
+              <a routerLink="/" class="btn btn--secondary">Browse destinations</a>
+            </div>
+          } @else {
+            <ul class="list-reset stack">
+              @for (r of pageItems(); track r.room.id) {
+                <li><app-result-card [result]="r" [criteria]="criteria()" /></li>
+              }
+            </ul>
+            @if (totalPages() > 1) {
+              <nav class="pager" aria-label="Results pages">
+                <button
+                  type="button"
+                  class="btn btn--secondary btn--sm"
+                  [disabled]="currentPage() === 1"
+                  (click)="goTo(currentPage() - 1)"
+                >
+                  ‹ Previous
+                </button>
+                <span>Page {{ currentPage() }} of {{ totalPages() }}</span>
+                <button
+                  type="button"
+                  class="btn btn--secondary btn--sm"
+                  [disabled]="currentPage() === totalPages()"
+                  (click)="goTo(currentPage() + 1)"
+                >
+                  Next ›
+                </button>
+              </nav>
+            }
+          }
+        }
+      }
+    }
+  </section>
+</div>

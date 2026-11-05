@@ -1,0 +1,40 @@
+<a routerLink="/admin/destinations" class="breadcrumb">← Destinations</a>
+<h1>{{ isEdit() ? 'Edit' : 'New' }} destination</h1>
+@if (isEdit() && !existing()) {
+<div class="empty">
+    <h2>Destination not found</h2>
+</div>
+} @else {
+<form class="card stack" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="form-grid">
+        <div class="field"><label for="d-name">Name</label>
+            <input id="d-name" formControlName="name"/>
+            @if (bad('name')) { <span class="error">Name is required (max 60 characters).</span> }
+        </div>
+        <div class="field"><label for="d-country">Country</label>
+            <input id="d-country" formControlName="country"/>
+            @if (bad('country')) { <span class="error">Country is required.</span> }
+        </div>
+    </div>
+    <div class="field">
+        <label for="d-tag">Tagline</label>
+        <input id="d-tag" formControlName="tagline" maxlength="80" />
+    </div>
+    <div class="field"><label for="d-desc">Description</label>
+    <textarea formControlName="description"></textarea>
+        @if (bad('description')) { <span class="error">Add a short description.</span> }</div>
+    <div class="field">
+        <label for="d-img">Image URL</label>
+        <input id="d-img" formControlName="imageUrl" type="url"/>
+        @if (bad('imageUrl')) { <span class="error">Enter a valid http(s) image URL.</span> }
+    </div>
+    <label class="check">
+        <input type="checkbox" formControlName="published" />
+         <span>Visible to customers on the home screen</span>
+    </label>
+    <div class="row">
+        <button class="btn" type="submit">Save destination</button>
+        <a class="btn btn--secondary" routerLink="/admin/destinations">Cancel</a>
+    </div>
+</form>
+}

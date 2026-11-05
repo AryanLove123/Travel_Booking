@@ -1,0 +1,23 @@
+<article class="card-row">
+    <a class="card-row__media" [routerLink]="['/rooms', result().room.id]" [queryParams]="params()" tabindex="-1">
+        <img appImgFallback [src]="cover()" alt="" width="360" height="240" loading="lazy" decoding="async" />
+    </a>
+    <div class="card-row__body">
+        <p class="muted small">{{typeLabel()}} in {{result().destination.name}} · {{ result().hotel.name }}</p>
+        <h3><a [routerLink]="['/rooms', result().room.id]" [queryParams]="params()">{{ result().room.name }}</a></h3>
+        <p class="small">{{ result().room.maxGuests }} guests · {{ result().room.beds }} bed{{ result().room.beds > 1 ? 's' : '' }} · {{ result().room.bathrooms }} bath</p>
+        <p class="small muted">{{ amenitySummary() }}</p>
+        <p class="row small">
+          @if (result().room.freeCancellation) { <span class="badge badge--success">Free cancellation</span> }
+          @if (result().availableUnits <= 2) { <span class="badge badge--warn">Only {{ result().availableUnits }} left</span> }
+        </p>
+    </div>
+
+    <div class="card-row__price">
+        <app-star-rating [rating]="result().hotel.rating" [reviews]="result().hotel.reviewCount" />
+        <div class="price">
+          <span class="muted small">{{ result().estimatedSubtotal | currency: 'USD' : 'symbol' : '1.0-0' }} for {{ result().nights }} night{{ result().nights > 1 ? 's' : '' }}</span>
+          <strong>{{ result().room.pricePerNight | currency: 'USD' : 'symbol' : '1.0-0' }}<span class="muted small"> / night</span></strong>
+        </div>
+      </div>
+</article>

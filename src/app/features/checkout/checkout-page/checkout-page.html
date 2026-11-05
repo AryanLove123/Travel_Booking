@@ -1,0 +1,141 @@
+<div class="container page">
+  @if (detail(); as d) {
+    <a routerLink="/rooms/{{ roomId() }}" [queryParams]="stayParams()" class="breadcrumb"
+      >← Back to room</a
+    >
+    <h1>Confirm and pay</h1>
+
+    @if (errors().length > 0) {
+      <div class="alert alert--warn" role="alert">
+        <strong>We need valid dates first.</strong>
+        <ul>
+          @for (e of errors(); track e) {
+            <li>{{ messages[e] }}</li>
+          }
+        </ul>
+      </div>
+    } @else {
+      <div class="layout">
+        <form class="stack" [formGroup]="form" (ngSubmit)="submit()">
+          <section class="card">
+            <h2 id="trip-h">Your trip</h2>
+            <div class="form-grid">
+              <div>
+                <span class="label muted">Dates</span>
+                <p>
+                  <strong>{{ criteria().checkIn | stayRange: criteria().checkOut }}</strong>
+                </p>
+              </div>
+              <div>
+                <span class="label muted">Guests</span>
+                <p>
+                  <strong>{{ criteria().guests }} guest, {{ criteria().rooms }} room</strong>
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Guest Details</h2>
+            <div class="form-grid">
+              <div class="field">
+                <label for="g-name">Full name</label>
+                <input type="text" formControlName="fullName" />
+                @if (invalid('fullName')) {
+                  <span class="error">Minimum lenght of the name is atleast 2 characters</span>
+                }
+              </div>
+              <div class="field">
+                <label for="g-email">Email</label>
+                <input type="email" formControlName="email" />
+                @if (invalid('email')) {
+                  <span class="error">Enter a valid email address.</span>
+                }
+              </div>
+              <div class="field">
+                <label for="g-phone">Phone</label>
+                <input type="tel" formControlName="phone" />
+                @if(invalid('phone')){
+                    <span class="error">Enter a phone of minimum 8 digits and maximum 10 digits</span>
+                }
+              </div>
+              <div class="field">
+                <label for="g-req">Special requests <span class="muted">(optional)</span></label>
+                <textarea id="g-req" formControlName="specialRequests" maxlength="300"></textarea>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Payment</h2>
+            <p>
+              You will continue to a <strong>simulated</strong> payment page. No Real card is used
+              and no money is charged.
+            </p>
+            <label for="p-terms" class="check">
+              <input type="checkbox" formControlName="terms" />
+              <span
+                >I accept the property rules and that this is a demo with simulated payments.</span
+              >
+            </label>
+            @if (invalid('terms')) {
+              <p class="error">Please accept to continue.</p>
+            }
+          </section>
+
+          @if (issues(); as issue) {
+            <p class="alert alert--error">{{ issue }}</p>
+          }
+          @if (serverError(); as err) {
+            <p class="alert alert--error">{{ err }}</p>
+          }
+
+          <button type="submit" class="btn" [disabled]="submitting() || !!issues()">
+            {{ submitting() ? 'Preparing payment...' : 'Confirm and pay' }}
+          </button>
+        </form>
+
+        <aside class="card summary">
+          <img appImgFallback [src]="d.room.imageUrls[0]" width="360" height="200" />
+          <p class="muted small">{{ d.hotel.name }} · {{ d.destination.name }}</p>
+          <h2>{{ d.room.name }}</h2>
+          <p class="small muted">
+            {{ d.room.maxGuests }} guests · {{ d.room.beds }} bed · {{ d.room.bathrooms }} bath
+          </p>
+          <app-star-rating [rating]="d.hotel.rating" [reviews]="d.hotel.reviewCount" />
+          <h3>Price details</h3>
+          <div class="price-lines">
+            <div>
+              <span
+                >{{ d.room.pricePerNight | currency: 'USD' : 'symbol' : '1.0-0' }} ×
+                {{ price().nights }} nights × {{ price().rooms }} room{{
+                  price().rooms > 1 ? 's' : ''
+                }}</span
+              ><span>{{ price().subtotal | currency: 'USD' }}</span>
+            </div>
+            @if (price().discount > 0) {
+              <div class="discount">
+                <span>New user discount</span><span>−{{ price().discount | currency: 'USD' }}</span>
+              </div>
+            }
+            <div>
+              <span>Service fee</span><span>{{ price().serviceFee | currency: 'USD' }}</span>
+            </div>
+            <div class="total">
+              <span>Total (USD)</span><span>{{ price().total | currency: 'USD' }}</span>
+            </div>
+          </div>
+          @if (d.room.freeCancellation) {
+            <p class="small muted">Free cancellation available.</p>
+          }
+        </aside>
+      </div>
+    }
+  } @else {
+    <div class="empty">
+      <h1>Room unavailable</h1>
+      <p>This room is no longer published.</p>
+      <a routerLink="/" class="btn">Browse Destinations</a>
+    </div>
+  }
+</div>

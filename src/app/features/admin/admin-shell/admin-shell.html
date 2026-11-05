@@ -1,0 +1,11 @@
+<div class="container page admin">
+    <aside class="side" aria-label="Admin navigation">
+        <nav>
+            <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+            <a routerLink="/admin/destinations" routerLinkActive="active">Destinations</a>
+            <a routerLink="/admin/hotels" routerLinkActive="active">Hotels</a>
+            <a routerLink="/admin/rooms" routerLinkActive="active">Rooms</a>
+        </nav>
+    </aside>
+    <section class="content"><router-outlet /></section>
+</div>

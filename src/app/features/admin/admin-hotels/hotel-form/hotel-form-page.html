@@ -1,0 +1,144 @@
+<a routerLink="/admin/hotels" class="breadcrumb">← Hotels</a>
+
+<h1>{{ isEdit() ? 'Edit' : 'New' }} hotel</h1>
+
+@if (isEdit() && !existing()) {
+<div class="empty">
+    <h2>Hotel not found</h2>
+</div>
+} @else {
+<form class="card stack" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="form-grid">
+
+        <div class="field">
+            <label for="h-name">Name</label>
+            <input id="h-name" formControlName="name" [attr.aria-invalid]="bad('name')" />
+
+            @if (bad('name')) {
+            <span class="error" role="alert">
+                Name is required.
+            </span>
+            }
+        </div>
+
+        <div class="field">
+            <label for="h-dest">Destination</label>
+
+            <select id="h-dest" formControlName="destinationId" [attr.aria-invalid]="bad('destinationId')">
+                <option value="">Select…</option>
+
+                @for (d of catalog.destinations(); track d.id) {
+                <option [value]="d.id">{{ d.name }}</option>
+                }
+            </select>
+
+            @if (bad('destinationId')) {
+            <span class="error" role="alert">
+                Choose a destination.
+            </span>
+            }
+        </div>
+
+        <div class="field">
+            <label for="h-type">Property type</label>
+
+            <select id="h-type" formControlName="propertyType">
+                @for (t of types; track t) {
+                <option [value]="t">{{ t }}</option>
+                }
+            </select>
+        </div>
+
+        <div class="field">
+            <label for="h-rating">Rating (0–5)</label>
+
+            <input id="h-rating" type="number" step="0.1" min="0" max="5" formControlName="rating"
+                [attr.aria-invalid]="bad('rating')" />
+
+            @if (bad('rating')) {
+            <span class="error" role="alert">
+                Rating must be between 0 and 5.
+            </span>
+            }
+        </div>
+
+        <div class="field">
+            <label for="h-reviews">Review count</label>
+
+            <input id="h-reviews" type="number" min="0" formControlName="reviewCount" />
+        </div>
+
+    </div>
+
+    <div class="field">
+        <label for="h-addr">Address</label>
+
+        <input id="h-addr" formControlName="address" [attr.aria-invalid]="bad('address')" />
+
+        @if (bad('address')) {
+        <span class="error" role="alert">
+            Address is required.
+        </span>
+        }
+    </div>
+
+    <div class="field">
+        <label for="h-desc">Description</label>
+
+        <textarea id="h-desc" formControlName="description"></textarea>
+    </div>
+
+    <div class="field">
+        <label>Image URLs</label>
+
+        @for (
+        control of form.controls.imageUrls.controls;
+        track $index;
+        let i = $index
+        ) {
+        <div class="row">
+            <input type="url" [formControl]="control" placeholder="https://..." [attr.aria-invalid]="
+              control.invalid && (control.touched || control.dirty)
+            " />
+
+            <button type="button" class="btn btn--secondary btn--sm" (click)="form.controls.imageUrls.removeAt(i)"
+                [disabled]="form.controls.imageUrls.length === 1">
+                Remove
+            </button>
+        </div>
+
+        @if (control.touched || control.dirty) {
+        @if (control.hasError('required')) {
+        <span class="error" role="alert">
+            Image URL is required.
+        </span>
+        } @else if (control.hasError('url')) {
+        <span class="error" role="alert">
+            Enter a valid http(s) URL.
+        </span>
+        }
+        }
+        }
+
+        <button type="button" class="btn btn--ghost btn--sm" (click)="form.controls.imageUrls.push(newUrl())">
+            + Add image
+        </button>
+    </div>
+
+    <label class="check">
+        <input type="checkbox" formControlName="published" />
+        Visible to customers
+    </label>
+
+    <div class="row">
+        <button class="btn" type="submit">
+            Save hotel
+        </button>
+
+        <a class="btn btn--secondary" routerLink="/admin/hotels">
+            Cancel
+        </a>
+    </div>
+
+</form>
+}

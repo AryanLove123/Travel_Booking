@@ -1,0 +1,274 @@
+
+<a routerLink="/admin/rooms" class="breadcrumb">← Rooms</a>
+
+<h1>{{ isEdit() ? 'Edit' : 'New' }} room</h1>
+
+@if (isEdit() && !existing()) {
+  <div class="empty">
+    <h2>Room not found</h2>
+  </div>
+} @else {
+  <form
+    class="card stack"
+    [formGroup]="form"
+    (ngSubmit)="save()"
+    novalidate
+  >
+    <div class="form-grid">
+
+      <div class="field">
+        <label for="r-name">Room name</label>
+
+        <input
+          id="r-name"
+          formControlName="name"
+          [attr.aria-invalid]="bad('name')"
+        />
+
+        @if (bad('name')) {
+          <span class="error" role="alert">
+            Name is required.
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="r-hotel">Hotel</label>
+
+        <select
+          id="r-hotel"
+          formControlName="hotelId"
+          [attr.aria-invalid]="bad('hotelId')"
+        >
+          <option value="">Select…</option>
+
+          @for (h of catalog.hotels(); track h.id) {
+            <option [value]="h.id">
+              {{ h.name }} ({{ catalog.destinationById(h.destinationId)?.name }})
+            </option>
+          }
+        </select>
+
+        @if (bad('hotelId')) {
+          <span class="error" role="alert">
+            Choose a hotel.
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="r-price">Price per night (USD)</label>
+
+        <input
+          id="r-price"
+          type="number"
+          min="1"
+          step="1"
+          formControlName="pricePerNight"
+          [attr.aria-invalid]="bad('pricePerNight')"
+        />
+
+        @if (bad('pricePerNight')) {
+          <span class="error" role="alert">
+            Enter a price of at least 1.
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="r-guests">Max guests per unit</label>
+
+        <input
+          id="r-guests"
+          type="number"
+          min="1"
+          max="16"
+          formControlName="maxGuests"
+          [attr.aria-invalid]="bad('maxGuests')"
+        />
+
+        @if (bad('maxGuests')) {
+          <span class="error" role="alert">
+            1–16 guests.
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="r-units">Units in inventory</label>
+
+        <input
+          id="r-units"
+          type="number"
+          min="1"
+          max="100"
+          formControlName="totalUnits"
+          [attr.aria-invalid]="bad('totalUnits')"
+        />
+
+        @if (bad('totalUnits')) {
+          <span class="error" role="alert">
+
+            @if (form.controls.totalUnits.errors?.['belowBooked']; as e) {
+              Guests have already booked up to {{ e.peak }} unit(s)
+              of this room at the same time, so inventory can't go
+              below {{ e.peak }}. Cancel or move those bookings first.
+            } @else {
+              Enter between 1 and 100 units.
+            }
+
+          </span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="r-beds">Beds</label>
+
+        <input
+          id="r-beds"
+          type="number"
+          min="1"
+          formControlName="beds"
+        />
+      </div>
+
+      <div class="field">
+        <label for="r-baths">Bathrooms</label>
+
+        <input
+          id="r-baths"
+          type="number"
+          min="1"
+          formControlName="bathrooms"
+        />
+      </div>
+
+    </div>
+
+    <div class="field">
+      <label for="r-desc">Description</label>
+
+      <textarea
+        id="r-desc"
+        formControlName="description"
+      ></textarea>
+    </div>
+
+    <div class="field">
+      <label>Amenities</label>
+
+      @for (control of form.controls.amenities.controls; track $index; let i = $index) {
+        <div class="row">
+          <input
+            [formControl]="control"
+            placeholder="e.g. Wifi"
+            [attr.aria-invalid]="
+              control.invalid && (control.touched || control.dirty)
+            "
+          />
+
+          <button
+            type="button"
+            class="btn btn--secondary btn--sm"
+            (click)="form.controls.amenities.removeAt(i)"
+            [disabled]="form.controls.amenities.length === 1"
+          >
+            Remove
+          </button>
+        </div>
+
+        @if (control.invalid && (control.touched || control.dirty)) {
+          <span class="error" role="alert">
+            @if (control.hasError('required')) {
+              Amenity is required.
+            } @else {
+              Enter a valid amenity.
+            }
+          </span>
+        }
+      }
+
+      <button
+        type="button"
+        class="btn btn--ghost btn--sm"
+        (click)="form.controls.amenities.push(newAmenity())"
+      >
+        + Add amenity
+      </button>
+    </div>
+
+    <div class="field">
+      <label>Image URLs</label>
+
+      @for (control of form.controls.imageUrls.controls; track $index; let i = $index) {
+        <div class="row">
+          <input
+            type="url"
+            [formControl]="control"
+            placeholder="https://..."
+            [attr.aria-invalid]="
+              control.invalid && (control.touched || control.dirty)
+            "
+          />
+
+          <button
+            type="button"
+            class="btn btn--secondary btn--sm"
+            (click)="form.controls.imageUrls.removeAt(i)"
+            [disabled]="form.controls.imageUrls.length === 1"
+          >
+            Remove
+          </button>
+        </div>
+
+        @if (control.invalid && (control.touched || control.dirty)) {
+          <span class="error" role="alert">
+            @if (control.hasError('required')) {
+              Image URL is required.
+            } @else if (control.hasError('url')) {
+              Enter a valid http(s) URL.
+            }
+          </span>
+        }
+      }
+
+      <button
+        type="button"
+        class="btn btn--ghost btn--sm"
+        (click)="form.controls.imageUrls.push(newUrl())"
+      >
+        + Add image
+      </button>
+    </div>
+
+    <label class="check">
+      <input
+        type="checkbox"
+        formControlName="freeCancellation"
+      />
+      Free cancellation
+    </label>
+
+    <label class="check">
+      <input
+        type="checkbox"
+        formControlName="published"
+      />
+      Visible to customers
+    </label>
+
+    <div class="row">
+      <button class="btn" type="submit">
+        Save room
+      </button>
+
+      <a
+        class="btn btn--secondary"
+        routerLink="/admin/rooms"
+      >
+        Cancel
+      </a>
+    </div>
+
+  </form>
+}

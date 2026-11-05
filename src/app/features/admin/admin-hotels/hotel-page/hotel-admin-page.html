@@ -1,0 +1,22 @@
+<div class="row row--between"><h1>Hotels</h1><a class="btn" routerLink="/admin/hotels/new">+ New hotel</a></div>
+    @if (catalog.hotels().length === 0) {
+      <div class="empty"><h2>No hotels</h2></div>
+    } @else {
+      <div class="table-wrap">
+        <table class="table">
+          <caption class="sr-only">Hotels</caption>
+          <thead><tr><th scope="col">Name</th><th scope="col">Destination</th><th scope="col">Type</th><th scope="col">Rooms</th><th scope="col">Visible</th><th scope="col">Actions</th></tr></thead>
+          <tbody>
+            @for (h of catalog.hotels(); track h.id) {
+              <tr>
+                <td><strong>{{ h.name }}</strong></td>
+                <td>{{ catalog.destinationById(h.destinationId)?.name ?? '—' }}</td>
+                <td>{{ h.propertyType }}</td><td>{{ catalog.roomsOf(h.id).length }}</td>
+                <td><label class="check"><input type="checkbox" [checked]="h.published" (change)="toggle(h)" [attr.aria-label]="'Published: ' + h.name" /> {{ h.published ? 'Published' : 'Hidden' }}</label></td>
+                <td class="actions"><a class="btn btn--secondary btn--sm" [routerLink]="['/admin/hotels', h.id]">Edit</a><button type="button" class="btn btn--danger btn--sm" (click)="remove(h)">Delete</button></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }

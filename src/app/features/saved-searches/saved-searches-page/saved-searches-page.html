@@ -1,0 +1,24 @@
+<div class="container page">
+      <h1>Saved searches</h1>
+      @if (views().length === 0) {
+        <div class="empty"><h2>Nothing saved yet</h2><p>Use “Save this search” on the results page to keep your criteria.</p><a routerLink="/" class="btn">Start searching</a></div>
+      } @else {
+        <ul class="list stack">
+          @for (v of views(); track v.item.id) {
+            <li class="card row row--between">
+              <div>
+                <h2>{{ v.destination || 'Unknown destination' }}</h2>
+                <p class="muted">{{ v.item.criteria.checkIn | stayRange: v.item.criteria.checkOut }} · {{ v.item.criteria.guests }} guests · {{ v.item.criteria.rooms }} room{{ v.item.criteria.rooms > 1 ? 's' : '' }}</p>
+                @if (v.expired) { <span class="badge badge--danger">Dates have passed</span> }
+                @else if (v.matches > 0) { <span class="badge badge--success">{{ v.matches }} stay{{ v.matches > 1 ? 's' : '' }} available now</span> }
+                @else { <span class="badge badge--warn">No availability right now</span> }
+              </div>
+              <div class="row">
+                <button type="button" class="btn btn--sm" (click)="rerun(v)" [disabled]="v.expired">Run search</button>
+                <button type="button" class="btn btn--secondary btn--sm" (click)="remove(v)">Delete</button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </div>

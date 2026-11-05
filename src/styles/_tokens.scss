@@ -1,0 +1,46 @@
+:root {
+  --c-brand-50: #e8f8f4;
+  --c-brand-100: #c5efe5;
+  --c-brand-500: #14a98a;
+  --c-brand-600: #0e8a70;
+  --c-brand-700: #0b6e5a;
+  --c-ink-900: #14202b;
+  --c-ink-700: #33414f;
+  --c-ink-500: #5d6b79;
+  --c-ink-300: #a9b3bd;
+  --c-line: #e2e7ec;
+  --c-surface: #ffffff;
+  --c-surface-alt: #f5f7f9;
+  --c-danger-600: #c0392b;
+  --c-danger-50: #fdecea;
+  --c-warn-600: #a56a00;
+  --c-warn-50: #fff4dc;
+  --c-success-600: #1b7f4b;
+  --c-success-50: #e5f6ec;
+  --c-star: #f5a623;
+
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.75rem;
+  --fs-2xl: clamp(2rem, 4vw + 1rem, 3.25rem);
+
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-7: 3rem;
+  --sp-8: 4.5rem;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 1px 2px rgb(20 32 43 / 8%);
+  --shadow-md: 0 6px 20px rgb(20 32 43 / 10%);
+  --focus-ring: 0 0 0 3px rgb(20 169 138 / 40%);
+  --container: 1180px;
+  --header-h: 64px;
+}
