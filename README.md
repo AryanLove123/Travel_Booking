@@ -1,59 +1,90 @@
 # Tripsy
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.21.
+Tripsy is a web-based travel booking platform built with Angular. It lets travellers browse destinations, search rooms, reserve a stay and pay through a simulated gateway, and lets admins manage destinations, hotels and rooms — built as part of the Angular Assignment.
 
-## Development server
+## Live Demo
 
-To start a local development server, run:
+- **Deployed App:** https://tripsyprojectlovekeshkumararyalorem.vercel.app/
 
-```bash
-ng serve
-```
+## Signing In
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Tripsy uses **Google Sign-In** (Firebase Authentication). Click **Continue with Google** on the login screen and continue with your own Google account.
 
-## Code scaffolding
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### For the mentor / evaluator: signing in as admin with your own email
 
-```bash
-ng generate component component-name
-```
+1. Open `src/environments/environment.ts`.
+2. Add your Google email to the allowed admin list:
+   ```ts
+   adminEmails: ['xyz@gmail.com', 'your.email@example.com'],
+   ```
+3. Rebuild/redeploy (or restart `ng serve`), then sign in with that Google account — you will see the **Admin** area.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+> Admin access is decided in the browser from this list, which is fine for an assignment demo but is not real server-side authorization.
 
-```bash
-ng generate --help
-```
+## Features Implemented
 
-## Building
+- **Google Authentication (Firebase)** — Social sign-in with role detection (admin / customer) based on the signed-in email.
+- **Destinations (Home)** — Browse published destinations.
+- **Room Search** — Search by destination, check-in/check-out dates and guests; results are computed in a **Web Worker** with a safe fallback.
+- **Room Details** — Amenities, photos, price and live availability.
+- **Checkout & Dummy Payment Gateway** — Reserve a room, review the price breakdown and pay through a simulated gateway (success, declined, cancelled or processing).
+- **Payment Success Page** — Booking details and a confirmation number.
+- **My Bookings** — View and cancel upcoming bookings; cancelled bookings return their rooms to availability.
+- **Admin Panel** — Add, update and delete destinations, hotels and rooms, and control their visibility.
+- **Saved Searches (Bonus ✅ attempted)** — Save a search and re-run it later.
+- **Styling** — SCSS with a custom design-token system.
 
-To build the project run:
+## Assumptions & Known Limitations
+
+- **No backend.** Firebase is used only for authentication. Destinations, hotels, bookings and saved searches are stored in the browser's `localStorage`, so data is per-browser/device. Sample data is seeded on first load.
+- **Payments are simulated.** No real card details are ever requested or charged.
+- **Roles are enforced in the browser only**, as noted above.
+
+## Tech Stack
+
+- Angular (standalone components, Signals, typed Reactive Forms)
+- Firebase Authentication (Google Sign-In)
+- RxJS
+- SCSS
+- Web Workers
+- `localStorage` as the persistence layer (no backend)
+
+## Running the Project Locally
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 22.22.3 or newer
+- Angular CLI:
+  ```bash
+  npm install -g @angular/cli
+  ```
+
+### Setup
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Start the development server:
+   ```bash
+   ng serve
+   ```
+
+3. Open your browser and navigate to:
+   ```
+   http://localhost:4200
+   ```
+
+4. Click **Continue with Google** and sign in with your own Google account.
+
+
+
+## Building for Production
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Build artifacts will be output to the `dist/` directory.
